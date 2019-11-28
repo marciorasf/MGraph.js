@@ -1,0 +1,25 @@
+{
+  "name": "mgraph",
+  "version": "1.0.0",
+  "description": "This is a Graph javascript lib.",
+  "main": "MGraph.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marciorasf/MGraph.js.git"
+  },
+  "keywords": [
+    "graph"
+  ],
+  "author": "marciorasf",
+  "license": "GNU",
+  "bugs": {
+    "url": "https://github.com/marciorasf/MGraph.js/issues"
+  },
+  "homepage": "https://github.com/marciorasf/MGraph.js#readme",
+  "devDependencies": {
+    "jest": "^24.9.0"
+  }
+}
