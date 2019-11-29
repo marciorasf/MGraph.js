@@ -1,5 +1,10 @@
 "use strict";
 
+const messageVertexNotExists = id => console.log(`Vertex {id:${id}} not exists`);
+const messageVertexExists = id => console.log(`Vertex {id:${vertex.id}} already in the graph.`);
+const messageEdgeNotExists = (from, to) => console.log(`Edge {from:${from}, to:${to}} not exists.`);
+const messageEdgeExists = (from, to) => console.log(`Edge {from:${from}, to:${to}} already exists.`);
+
 const MGraph = {
   initializeGraph: function(vertices = [], edges = []) {
     let graph = new Array();
@@ -8,160 +13,95 @@ const MGraph = {
       addVertex(id, properties = null) {
         if (!instance.graph.find(el => el.id === id)) {
           instance.graph.push(MGraph.Vertex(id, properties));
-        } else console.log(`Vertex of id=${vertex.id} already in the graph.`);
+        } else messageVertexExists(vertex.id);
       },
       removeVertex(id) {
         let targetVertex = instance.getVertex(id);
 
         if (!targetVertex) {
-          console.log(`Vertex of id=${id} not found`);
+          messageVertexNotExists(id);
           return;
         }
 
         for (let vertex of instance.graph) {
           if (vertex.id != id) {
-            let previousVertex;
-            let nextVertex = vertex;
-            while (nextVertex.next !== null) {
-              if (nextVertex.id === id) {
-                previousVertex.next = nextVertex.next;
-                delete nextVertex.id;
-                delete nextVertex.properties;
-                delete nextVertex.next;
-                break;
-              }
-              previousVertex = nextVertex;
-              nextVertex = nextVertex.next;
-            }
+            if (instance.existsEdge(vertex.id, id)) instance.removeEdge(vertex.id, id);
           } else {
-            let currentVertex = vertex;
-            let nextVertex;
-
-            instance.graph = instance.graph.filter(function(el) {
-              return el.id != id;
-            });
-
-            while (currentVertex.next != null) {
-              nextVertex = currentVertex.next;
-              delete currentVertex.id;
-              delete currentVertex.properties;
-              delete currentVertex.next;
-              currentVertex = nextVertex;
-            }
-            delete currentVertex.id;
-            delete currentVertex.properties;
-            delete currentVertex.next;
+            instance.graph = instance.graph.filter(el => el.id != id);
           }
         }
       },
-      addEdge(edge) {
-        let vertexFrom = instance.getVertex(edge.from);
-        if (!vertexFrom) {addEdge(edge) {
-        let vertexFrom = instance.getVertex(edge.from);
+      addEdge(from, to, properties = null) {
+        let vertexFrom = instance.getVertex(from);
         if (!vertexFrom) {
-          console.log(`Vertex of id=${edge.from} not exists.`);
+          messageVertexNotExists(from);
           return;
         }
-        let vertexTo = instance.getVertex(edge.to);
+        let vertexTo = instance.getVertex(to);
         if (!vertexTo) {
-          console.log(`Vertex of id=${edge.to} not exists.`);
+          messageVertexNotExists(to);
           return;
         }
-        if (instance.existsEdge(edge)) {
-          console.log(`Edge {from:${edge.from}, to:${edge.to}} already exists.`);
+        if (instance.existsEdge(from, to)) {
+          messageEdgeExists(from, to);
           return;
         }
-
-        vertexTo = MGraph.Vertex(vertexTo.id);
-        while (vertexFrom.next != null) {
-          vertexFrom = vertexFrom.next;
-        }
-        vertexFrom.next = vertexTo;
+        vertexFrom.edges.push(MGraph.Edge(from, to, properties));
       },
-          console.log(`Vertex of id=${edge.from} not exists.`);
-          return;
-        }
-        let vertexTo = instance.getVertex(edge.to);
-        if (!vertexTo) {
-          console.log(`Vertex of id=${edge.to} not exists.`);
-          return;
-        }
-        if (instance.existsEdge(edge)) {
-          console.log(`Edge {from:${edge.from}, to:${edge.to}} already exists.`);
-          return;
-        }
-
-        vertexTo = MGraph.Vertex(vertexTo.id);
-        while (vertexFrom.next != null) {
-          vertexFrom = vertexFrom.next;
-        }
-        vertexFrom.next = vertexTo;
-      },
-      removeEdge(edge) {
-        let vertexFrom = instance.getVertex(edge.from);
+      removeEdge(from, to) {
+        let vertexFrom = instance.getVertex(from);
         if (!vertexFrom) {
-          console.log(`Vertex of id=${edge.from} not exists.`);
+          messageVertexNotExists(from);
           return;
         }
-        if (!instance.existsVertex(edge.to)) {
-          console.log(`Vertex of id=${edge.to} not exists.`);
+        if (!instance.existsVertex(to)) {
+          messageVertexNotExists(to);
           return;
         }
-        if (!instance.existsEdge(edge)) {
-          console.log(`Edge {from:${edge.from}, to:${edge.to}} not exists.`);
+        if (!instance.existsEdge(from, to)) {
+          messageEdgeNotExists(from, to);
           return;
         }
-
-        let nextVertex = vertexFrom.next;
-        let previousVertex = vertexFrom;
-        while (nextVertex != null) {
-          if (nextVertex.id == edge.to) {
-            previousVertex.next = nextVertex.next;
-            return;
-          }
-          previousVertex = nextVertex;
-          nextVertex = nextVertex.next;
-        }
+        vertexFrom.edges = vertexFrom.edges.filter(el => el.to != to);
       },
       existsVertex(id) {
         return instance.getVertex(id) ? true : false;
       },
-      existsEdge(edge) {
-        let vertexFrom = instance.getVertex(edge.from);
-
-        if (vertexFrom && instance.existsVertex(edge.to)) {
-          while (vertexFrom.next != null) {
-            if (vertexFrom.id == edge.to) {
-              return true;
-            }
-            vertexFrom = vertexFrom.next;
-          }
-          return vertexFrom.id == edge.to ? true : false;
-        }
+      existsEdge(from, to) {
+        return instance.getEdge(from, to) ? true : false;
       },
       getVertex(id) {
-        let node = instance.graph.find(el => el.id == id);
-        return node ? node : false;
+        let vertex = instance.graph.find(el => el.id == id);
+        return vertex ? vertex : false;
+      },
+      getEdge(from, to) {
+        let vertexFrom = instance.getVertex(from);
+        let edge = vertexFrom.edges.find(el => el.to == to);
+        return edge ? edge : false;
+      },
+      setVertexProperties(id, properties) {
+        let vertex = instance.getVertex(id);
+        if (vertex) vertex.properties = properties;
+        else messageVertexExists(id);
+      },
+      setEdgeProperties(from, to, properties) {
+        let edge = instance.getEdge(from, to);
+        if (edge) edge.properties = properties;
+        else messageEdgeNotExists(from, to);
       },
       getAdjacents(id) {
         let root = instance.getVertex(id);
         if (root) {
-          let vertexArr = new Array();
-          let nextNode = root;
-
-          while (nextNode.next != null) {
-            vertexArr.push(nextNode.id);
-            nextNode = nextNode.next;
-          }
-          vertexArr.push(nextNode.id);
-          return vertexArr;
+          return [root.id, ...root.edges.map(el => el.to)];
         }
       },
       getAdjacencyList() {
         let listString = "";
         for (let vertex of instance.graph) listString += `${instance.getAdjacents(vertex.id).join(" -> ")}\n`;
         return listString.slice(0, -1);
-      }
+      },
+      BFS() {},
+      DFS() {}
     };
 
     for (let vertex of vertices) {
@@ -169,7 +109,7 @@ const MGraph = {
     }
 
     for (let edge of edges) {
-      instance.addEdge(edge);
+      instance.addEdge(edge.from, edge.to);
     }
 
     return instance;
@@ -178,11 +118,11 @@ const MGraph = {
     return {
       id: id,
       properties: properties,
-      next: null
+      edges: new Array()
     };
   },
-  Edge(from, to) {
-    return { from: from, to: to };
+  Edge(from, to, properties = null) {
+    return { from: from, to: to, properties: properties };
   }
 };
 
