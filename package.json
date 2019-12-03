@@ -1,7 +1,7 @@
 {
   "name": "mgraph",
   "version": "1.0.0",
-  "description": "This is a Graph javascript lib.",
+  "description": "A Graph javascript lib.",
   "main": "MGraph.js",
   "scripts": {
     "test": "jest"
@@ -11,15 +11,22 @@
     "url": "git+https://github.com/marciorasf/MGraph.js.git"
   },
   "keywords": [
-    "graph"
+    "graph",
+    "javascript"
   ],
-  "author": "marciorasf",
+  "author": {
+    "name": "Marcio Roberto Andrade Souza Filho",
+    "githubUser": "@marciorasf",
+    "email": "marciorasf@gmail.com"
+  },
   "license": "GNU",
   "bugs": {
     "url": "https://github.com/marciorasf/MGraph.js/issues"
   },
   "homepage": "https://github.com/marciorasf/MGraph.js#readme",
+  "dependencies": {},
   "devDependencies": {
     "jest": "^24.9.0"
-  }
+  },
+  "private": true
 }
