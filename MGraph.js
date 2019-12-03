@@ -10,14 +10,12 @@ const MGraph = {
     let graph = new Array();
     let instance = {
       graph: graph,
-      addVertex(id, properties = null) {
-        if (!instance.graph.find(el => el.id === id)) {
-          instance.graph.push(MGraph.Vertex(id, properties));
-        } else messageVertexExists(vertex.id);
+      addVertex(id, properties = undefined) {
+        if (!instance.graph.find(el => el.id === id)) instance.graph.push(MGraph.Vertex(id, properties));
+        else messageVertexExists(vertex.id);
       },
       removeVertex(id) {
         let targetVertex = instance.getVertex(id);
-
         if (!targetVertex) {
           messageVertexNotExists(id);
           return;
@@ -31,7 +29,29 @@ const MGraph = {
           }
         }
       },
-      addEdge(from, to, properties = null) {
+      getVertex(id) {
+        let vertex = instance.graph.find(el => el.id == id);
+        return vertex ? vertex : false;
+      },
+      existsVertex(id) {
+        return instance.getVertex(id) ? true : false;
+      },
+      setVertexProperties(id, properties) {
+        let vertex = instance.getVertex(id);
+        if (vertex) vertex.properties = properties;
+        else messageVertexExists(id);
+      },
+      findVertices(filterFunction) {
+        let arr = instance.graph.map(vertex => (filterFunction(vertex) ? vertex : undefined));
+        arr = arr.filter(vertex => vertex);
+        return arr;
+      },
+      addEdge(from, to, properties = undefined) {
+        if (from == to) {
+          console.log(`Edge {from:${from}, to:${to}} could not be added because loops are not allowed.`);
+          return;
+        }
+
         let vertexFrom = instance.getVertex(from);
         if (!vertexFrom) {
           messageVertexNotExists(from);
@@ -64,30 +84,24 @@ const MGraph = {
         }
         vertexFrom.edges = vertexFrom.edges.filter(el => el.to != to);
       },
-      existsVertex(id) {
-        return instance.getVertex(id) ? true : false;
-      },
-      existsEdge(from, to) {
-        return instance.getEdge(from, to) ? true : false;
-      },
-      getVertex(id) {
-        let vertex = instance.graph.find(el => el.id == id);
-        return vertex ? vertex : false;
-      },
       getEdge(from, to) {
         let vertexFrom = instance.getVertex(from);
         let edge = vertexFrom.edges.find(el => el.to == to);
         return edge ? edge : false;
       },
-      setVertexProperties(id, properties) {
-        let vertex = instance.getVertex(id);
-        if (vertex) vertex.properties = properties;
-        else messageVertexExists(id);
+      existsEdge(from, to) {
+        return instance.getEdge(from, to) ? true : false;
       },
       setEdgeProperties(from, to, properties) {
         let edge = instance.getEdge(from, to);
         if (edge) edge.properties = properties;
         else messageEdgeNotExists(from, to);
+      },
+      findEdges(filterFunction) {
+        let arr = new Array();
+        instance.graph.forEach(vertex => arr.push(...vertex.edges.map(edge => (filterFunction(edge) ? edge : undefined))));
+        arr = arr.filter(edge => edge);
+        return arr;
       },
       getAdjacents(id) {
         let root = instance.getVertex(id);
@@ -100,29 +114,44 @@ const MGraph = {
         for (let vertex of instance.graph) listString += `${instance.getAdjacents(vertex.id).join(" -> ")}\n`;
         return listString.slice(0, -1);
       },
-      BFS() {},
-      DFS() {}
+      BFS(startId = undefined) {
+        let startVertex = instance.getStartVertex(startId);
+      },
+      DFS(startId = undefined) {
+        let startVertex = instance.getStartVertex(startId);
+      },
+      getStartVertex(id = undefined) {
+        let startVertex;
+        if (id) {
+          startVertex = instance.getVertex(id);
+          if (!startVertex) messageVertexNotExists(id);
+        } else {
+          startVertex = instance.graph[0] ? instance.graph[0] : undefined;
+          if (!startVertex) console.log("Graph is empty");
+        }
+        return startVertex;
+      },
+      hasCycle() {}
     };
-
     for (let vertex of vertices) {
-      instance.addVertex(vertex.id, vertex.properties);
+      instance.addVertex(vertex.id, vertex.props);
     }
 
     for (let edge of edges) {
-      instance.addEdge(edge.from, edge.to);
+      instance.addEdge(edge.from, edge.to, edge.props);
     }
 
     return instance;
   },
-  Vertex(id, properties = null) {
+  Vertex(id, properties = undefined) {
     return {
       id: id,
       properties: properties,
       edges: new Array()
     };
   },
-  Edge(from, to, properties = null) {
-    return { from: from, to: to, properties: properties };
+  Edge(from, to, properties = undefined, weight = undefined) {
+    return { from: from, to: to, properties: properties, weight: weight };
   }
 };
 

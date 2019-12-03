@@ -3,56 +3,80 @@ const MGraph = require("./MGraph");
 let testVertices = [
   {
     id: 0,
-    properties: {
-      latitude: -56.2961681,
-      longitude: -14.7246617
+    props: {
+      pV: true
     }
   },
   {
     id: 1,
-    properties: {
-      latitude: -56.2952434,
-      longitude: -14.7240577
+    props: {
+      pV: false
     }
   },
   {
     id: 2,
-    properties: {
-      latitude: -56.293874,
-      longitude: -14.7234749
+    props: {
+      pV: true
     }
   },
   {
     id: 3,
-    properties: {
-      latitude: -56.2915897,
-      longitude: -14.7219445
+    props: {
+      pV: false
     }
   },
   {
     id: 4,
-    properties: {
-      latitude: -56.2886207,
-      longitude: -14.719951
+    props: {
+      pV: false
     }
   },
   {
     id: 5,
-    properties: {
-      latitude: -56.2861901,
-      longitude: -14.7173759
+    props: {
+      pV: false
     }
   }
 ];
 
 let testEdges = [
-  { from: 0, to: 1 },
-  { from: 0, to: 3 },
-  { from: 1, to: 2 },
-  { from: 1, to: 2 }
+  {
+    from: 0,
+    to: 1,
+    props: { pE: false }
+  },
+  {
+    from: 0,
+    to: 2,
+    props: { pE: true }
+  },
+  {
+    from: 0,
+    to: 3,
+    props: { pE: true }
+  },
+  {
+    from: 3,
+    to: 1,
+    props: { pE: true }
+  },
+  {
+    from: 2,
+    to: 2,
+    props: { pE: false }
+  },
+  {
+    from: 2,
+    to: 2,
+    props: { pE: false }
+  }
 ];
 
 var myGraph = MGraph.initializeGraph(testVertices, testEdges);
-myGraph.removeVertex(4);
-console.log(myGraph.getAdjacents(1));
 console.log(myGraph.getAdjacencyList());
+// console.log(myGraph.findVertices(el => (el.properties.pV ? true : false)));
+console.log(
+  myGraph.findEdges(el => {
+    if (el.properties) return el.properties.pE ? true : false;
+  })
+);
