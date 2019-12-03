@@ -8,23 +8,16 @@ A graph lib implemented in JavaScript.
     contact: marciorasf@gmail.com
    
 ## Implemented
-Currently the following methods are implemented:
-- printAdjacencyList
-- Vertex
 - addVertex
 - removeVertex
-- addEdge
-- removeVertex
-- existsVertex
-- existsEdge
 - getVertex
+- existsVertex
+- setVertexProperties
+- findVertices
+- addEdge
+- removeEdge
+- getEdge
+- existsEdge
+- setEdgeProperties
 - getAdjacents
-- printAdjacencyList
-
-## TODO
-- Implement the tests
-- Automate the test.
-- Deploy at npm
-- Write an guide
-    
-## Issues
+- getAdjacencyList.
